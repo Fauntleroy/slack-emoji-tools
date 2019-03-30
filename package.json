@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "gulp dev",
-    "build": "gulp build"
+    "build": "parcel build src/content.js --no-minify",
+    "build:shook": "parcel build src/content.js --no-minify --experimental-scope-hoisting",
+    "dev": "parcel src/content.js"
   },
   "repository": {
     "type": "git",
@@ -26,30 +27,19 @@
   },
   "homepage": "https://github.com/Fauntleroy/neutral-face-emoji-tools#readme",
   "devDependencies": {
-    "babelify": "^6.3.0",
-    "browserify": "^11.2.0",
-    "gulp": "^3.9.0",
-    "gulp-util": "^3.0.6",
-    "lessify": "^1.0.1",
-    "mkdirp": "^0.5.1",
-    "vinyl-source-stream": "^1.1.0",
-    "watch": "^0.16.0",
-    "watchify": "^3.4.0"
+    "@types/chrome": "0.0.81",
+    "less": "^3.9.0",
+    "parcel-bundler": "^1.12.3",
+    "parcel-plugin-static-files-copy": "^2.0.0"
   },
   "dependencies": {
-    "element-ready": "^3.0.0",
-    "lodash": "^3.10.1",
-    "simple-dropzone": "^0.5.3",
-    "strip": "0.0.7",
-    "superagent": "^1.4.0",
-    "superagent-throttle": "^0.2.5",
-    "uuid": "^2.0.1"
+    "axios": "^0.18.0",
+    "element-ready": "^3.1.0",
+    "lodash.get": "^4.4.2",
+    "queue": "^6.0.1",
+    "simple-dropzone": "^0.7.0"
   },
-  "browserify": {
-    "debug": true,
-    "transform": [
-      "babelify",
-      "lessify"
-    ]
+  "staticFiles": {
+    "staticPath": "src/static"
   }
 }
