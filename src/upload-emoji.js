@@ -7,10 +7,17 @@ import getSlackApiData from './get-slack-api-data';
 
 const NO_OP = function () {};
 
+/**
+ * Throttle requests to no more than 15 per minute to avoid hitting Slack API's
+ * rate limit.
+ *
+ * @see [Slack API rate limit docs](https://api.slack.com/docs/rate-limits#web)
+ */
 const superagentThrottle = new SuperagentThrottle({
   active: true,
   concurrent: 5,
-  rate: Infinity
+  rate: 15,
+  ratePer: 60000,
 });
 
 export default function uploadEmoji (file, callback = NO_OP) {
