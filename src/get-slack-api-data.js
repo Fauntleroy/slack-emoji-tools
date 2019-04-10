@@ -1,29 +1,55 @@
-export default function getSlackApiData () {
-  const scripts = document.querySelectorAll('script[type="text/javascript"]');
-  let apiToken;
-  let versionUid;
+class ExtractGlobalVariable {
+  constructor(variableName) {
+    this._variableName = variableName;
+    this._handShake = this._generateHandshake();
+    this._inject();
+    this._data = this._listen();
+  }
 
-  scripts.forEach((script) => {
-    const isBootDataScript = /var\sboot_data\s\=\s\{/.test(script.innerText);
+  get data() {
+    return this._data;
+  }
 
-    if (!isBootDataScript) {
-      return;
+  // Private
+
+  _generateHandshake() {
+    const array = new Uint32Array(5);
+    return window.crypto.getRandomValues(array).toString();
+  }
+
+  _inject() {
+    function propagateVariable(handShake, variableName) {
+      const message = { handShake };
+      message[variableName] = window[variableName];
+      window.postMessage(message, "*");
     }
 
-    const apiTokenResult = /["]?api_token["]?\:\s*\"(.+?)\"/g.exec(script.innerText);
-    const versionUidResult = /["]?version_uid["]?\:\s*\"(.+?)\"/g.exec(script.innerText);
-    
-    if (apiTokenResult) {
-      apiToken = apiTokenResult[1];
-    }
+    const script = `( ${propagateVariable.toString()} )('${this._handShake}', '${this._variableName}');`
+    const scriptTag = document.createElement('script');
+    const scriptBody = document.createTextNode(script);
 
-    if (versionUidResult) {
-      versionUid = versionUidResult[1];
-    }
-  });
+    scriptTag.id = 'chromeExtensionDataPropagator';
+    scriptTag.appendChild(scriptBody);
+    document.body.append(scriptTag);
+  }
 
-  return {
-    apiToken,
-    versionUid
-  };
+  _listen() {
+    return new Promise(resolve => {
+      window.addEventListener("message", ({data}) => {
+        // We only accept messages from ourselves
+        if (data.handShake != this._handShake) return;
+        resolve(data);
+      }, false);
+    })
+  }
 }
+
+const getSlackApiData = new ExtractGlobalVariable('boot_data').data.then(data => {
+  const { api_token: token, version_uid: versionUid } = data.boot_data;
+  return {
+    token,
+    versionUid
+  }
+});
+
+export default getSlackApiData;
