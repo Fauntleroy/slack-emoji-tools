@@ -9,7 +9,7 @@ const NO_OP = function () {};
 
 const superagentThrottle = new SuperagentThrottle({
   active: true,
-  concurrent: 5,
+  concurrent: 1,
   rate: Infinity
 });
 
