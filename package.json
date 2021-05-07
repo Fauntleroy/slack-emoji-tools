@@ -44,7 +44,7 @@
     "axios": "^0.19.2",
     "axios-concurrency": "^1.0.3",
     "file-selector": "^0.1.12",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "uuid": "^2.0.1"
   }
 }
